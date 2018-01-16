@@ -23,30 +23,51 @@
      		<i class="icon-keyboard_arrow_right"></i>
      	</div>
 		<div class="backguand"><img :src="seller.avatar" alt=""></div>  <!-- 整个header的背景虚化 -->
-		<div class="detail-wrapper" v-show="isshow">
-			<div class="title-wrapper">
-				<div class="title">{{seller.name}}</div>
-				<div class="star">lalala</div>
-			</div>
-			<div class="supports" v-if="seller.supports" v-for="(support,index) in seller.supports">
-				<div class="line"></div>
-				<span>优惠信息</span>
-				<div class="line"></div>
-				<span class="icon" :class="classMap[seller.supports[index].type]"></span>
-				<span class="text" v-text="seller.supports[index].description"></span>
-			</div>
+		<div class="detail-wrapper clearfix" v-show="isshow">
 			<div class="detail">
-				{{seller.bulletin}}
+				<div class="title-wrapper">
+					<div class="title">{{seller.name}}</div>
+					<div class="star">
+						<star :score="seller.score" :size="24"></star>
+					</div>
+				</div>
+				<div class="supports-wrapper">
+					<div class="support">
+						<div class="title">
+							<div class="line"></div>
+							<span>优惠信息</span>
+							<div class="line"></div>
+						</div>
+						<ul v-if="seller.supports">
+							<li v-for="(support,index) in seller.supports">
+								<span class="icon" :class="classMap[seller.supports[index].type]"></span>
+								<span class="text" v-text="seller.supports[index].description"></span>
+							</li>
+						</ul>
+						<div class="detail-main">
+							<div class="title">
+								<div class="line"></div>
+								<span>商家公告</span>
+								<div class="line"></div>
+							</div>
+							<div class="bulletin">
+							    <span>{{seller.bulletin}}</span>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
-			<button>+</button>
+			
+			<div class="button">
+				<i class="icon-close" @click="closeDetail"></i>
+			</div>
 		</div>  <!-- 点击bulletin的全屏弹层 -->
-
      </div>
-
   </div>
 </template>
 
 <script>
+import star from '../../components/star/star';
 export default {
 	name: "seller",
  	props: {        //父组件传过来的额数据通过props接受
@@ -66,7 +87,13 @@ export default {
   methods: {
   	detailShow(){
   		this.isshow = true;
+  	},
+  	closeDetail(){
+  		this.isshow = !this.isshow;
   	}
+  },
+  components:{
+  	star
   }
 }
 </script>
@@ -83,7 +110,6 @@ export default {
  	overflow:hidden
  .header-wrapper 
  		padding:24px 0px 0px 0px
- 		
  	.img
  		width:64px
  		height:64px
@@ -202,28 +228,93 @@ export default {
 			filter:blur(10px)
 	.detail-wrapper
 		position:fixed
+		overflow:auto
 		left:0
 		top:0
-		background:rgba(0,0,0,0.8)
+		background:rgba(0,0,0,0.9)
 		width:100%
-		height:100%		
-		.title-wrapper
-			font-size:16px
-			font-weight:700
-			color:#fff
-			line-height:16px
-			text-align:center
-			margin-top:64px
-			margin-bottom:28px
-			.star
-				height:24px
-				line-height:24px
+		height:100%	
+		.detail
+			min-height:100%	
+			height:auto
+			.title-wrapper
 				font-size:16px
-				margin-top:16px
-		.supports
-			font-size:10px
-			text-align:center
-		.detail 						
- 			font-size:10px
- 	
+				font-weight:700
+				color:#fff
+				line-height:16px
+				text-align:center
+				margin-top:64px
+				margin-bottom:28px
+				.star
+					height:24px
+					line-height:24px
+					font-size:16px
+					margin-top:16px
+			.supports-wrapper
+				font-size:10px
+				text-align:center
+				height:100%
+				padding:0 36px
+				.support
+					overflow: auto
+					padding-bottom:64px
+					.title
+						display:flex
+						margin-bottom:24px
+						.line
+							border-bottom:1px solid rgba(255,255,255,0.4)
+							flex:1
+							position:relative
+							bottom:6px
+						span
+							padding:0 12px
+							font-size:14px
+							font-weight:700	
+					ul
+						padding-left:12px
+						padding-bottom:24px
+						text-align:left
+						li
+							height:16px
+							margin-top:12px
+							.icon
+								display:inline-block
+								width:12px
+								height:12px;
+								margin-right:4px
+								vertical-align:top
+								background-size:12px 12px
+								&.decrease
+									bg-image('decrease_1')
+								&.discount
+									bg-image('discount_1')
+								&.special
+									bg-image('special_1')
+								&.invoice
+									bg-image('invoice_1')
+								&.guarantee
+									bg-image('guarantee_1')
+							.text
+								font-size:12px
+								color:#fff
+								line-height:12px
+								display:inline-block
+								vertical-align:top
+					.detail-main
+						text-align:left
+						.bulletin
+							line-height:24px
+							font-size:12px
+							padding:0 12px			
+				    
+		.button
+ 	    	text-align:center
+ 	    	margin:-64px auto
+ 	    	clear:both
+ 	    	position:relative
+ 	    	width:32px
+ 	    	height:32px  
+ 	    	overflow:hidden 
+ 	    	.icon-close
+ 	    		font-size:32px	 		
 </style>
