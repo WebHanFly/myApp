@@ -1,96 +1,108 @@
 <template>
-  <div class="star" :class="starType">
-    <span v-for="itemClass in itemClasses" :class="itemClass" class="star-item" track-by="$index"></span>
-  </div>
+	<div id="star" :class="startype">
+		<span v-for="star in starFloor" class="starFull"></span>
+		<span v-show="halfStar" class="starHalf"></span>
+		<span v-for="starN in starNull" class="starNull"></span>
+	</div>
 </template>
-
-<script type="text/ecmascript-6">
-  const LENGTH = 5;
-  const CLS_ON = 'on';
-  const CLS_HALF = 'half';
-  const CLS_OFF = 'off';
-
-  export default {
-    props: {
-      size: {
-        type: Number
-      },
-      score: {
-        type: Number
-      }
-    },
-    computed: {
-      starType() {
-        return 'star-' + this.size;
-      },
-      itemClasses() {
-        let result = [];
-        let score = Math.floor(this.score * 2) / 2;
-        let hasDecimal = score % 1 !== 0;
-        let integer = Math.floor(score);
-        for (let i = 0; i < integer; i++) {
-          result.push(CLS_ON);
-        }
-        if (hasDecimal) {
-          result.push(CLS_HALF);
-        }
-        while (result.length < LENGTH) {
-          result.push(CLS_OFF);
-        }
-        return result;
-      }
-    }
-  };
+<script>
+	export default {
+		props: {
+			score: {
+				type: Number,
+				default:3.7
+			},
+			size: {
+				type: Number,
+				default: 20
+			}
+		},
+		data(){
+			return {
+				msg: "hello",
+				// score: this.score
+			}
+		},
+		computed:{
+			startype(){
+				return "star-"+this.size;
+			},
+			starFloor(){
+				return Math.floor(this.score);
+			},
+			starCeil(){
+				return Math.ceil(this.score);
+			},
+			starNull(){
+				let starFloor = Math.floor(this.score);
+				let starRound = Math.round(this.score);
+				let starCeil = Math.ceil(this.score);
+				let half = starCeil - starRound;
+				if(half == 0){
+					return 5-starCeil;
+				}else{
+					return 5-starFloor;
+				}
+			},
+			halfStar(){
+				let starFloor = Math.floor(this.score);
+				let starRound = Math.round(this.score);
+				let starCeil = Math.ceil(this.score);
+				let isInt = starCeil - starFloor  //判断是否为整数。
+				let half = starCeil - starRound;
+				if(half == 0 && isInt != 0){
+					return true;
+				}else{
+					return false
+				}
+			}
+		}
+	}
 </script>
-
-<style lang="stylus" rel="stylesheet/stylus">
-  @import "../../common/stylus/mixin.styl"
-
-.star
-	font-size: 0
-	.star-item
-		display: inline-block
-		background-repeat: no-repeat
-		&.star-48
-			.star-item
-				width: 20px
-				height: 20px
-				margin-right: 22px
-				background-size: 20px 20px
-				&:last-child
-					margin-right: 0
-				&.on
-					bg-image('star48_on')
-				&.half
-					bg-image('star48_half')
-				&.off
-					bg-image('star48_off')
-		&.star-36
-			.star-item
-				width: 15px
-				height: 15px
-				margin-right: 6px
-				background-size: 15px 15px
-				&:last-child
-					margin-right: 0
-				&.on
-					bg-image('star36_on')
-				&.half
-					bg-image('star36_half')
-				&.off
-					bg-image('star36_off')
-		&.star-24
-			.star-item
-				width: 10px
-				height: 10px
-				margin-right: 3px
-				background-size: 10px 10px
-				&:last-child
-					margin-right: 0
-				&.on
-					bg-image('star24_on')
-				&.half
-					bg-image('star24_half')
-				&.off
-					bg-image('star24_off')
+<style coped lang="stylus" rel="stylesheet/stylus"> 
+@import "../../common/stylus/mixin"	
+.star-20
+	.starFull
+		width:20px
+		height:20px
+		display:inline-block
+		margin-right:20px
+		bg-image:('star48_on')
+		background-size:20px 20px
+	.starHalf
+		width:20px
+		height:20px
+		margin-right:20px
+		display:inline-block
+		bg-image:('star48_half')
+		background-size:20px 20px
+	.starNull
+		width:20px
+		height:20px
+		margin-right:20px
+		display:inline-block
+		bg-image:('star48_off')
+		background-size:20px 20px
+.star-10
+	.starFull
+		width:10px
+		height:10px
+		display:inline-block
+		margin-right:10px
+		bg-image:('star24_on')
+		background-size:10px 10px
+	.starHalf
+		width:10px
+		height:10px
+		display:inline-block
+		margin-right:10px
+		bg-image:('star24_half')
+		background-size:10px 10px
+	.starNull
+		width:10px
+		height:10px
+		display:inline-block
+		margin-right:10px
+		bg-image:('star24_off')
+		background-size:10px 10px
 </style>

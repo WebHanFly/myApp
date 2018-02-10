@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div>
     <v-header :seller="seller"></v-header>
     <div class="tab">
       <router-link to="/goods" class="tab-item">商品</router-link>
@@ -17,7 +17,9 @@ import header from './components/header/header'
 export default {
   name: 'app',    //给组件起个名字方便调用
   data(){
-    return{ seller : {} }
+    return{ seller : {},
+            
+     }
   },
   created(){
     this.$http.get('api/seller').then((res) => {
@@ -27,6 +29,9 @@ export default {
       }
     })
   },
+  methods:{
+  
+  },
   components:{
     'v-header':header
   }
@@ -34,10 +39,11 @@ export default {
 </script>
 
 <style lang="stylus">
-#app
+
   .tab 
     display:flex
     background:#fff
+    border-bottom:1px solid rgba(7,17,27,0.1)
     .tab-item
       flex:1
       text-align:center
@@ -45,5 +51,7 @@ export default {
       line-height:40px
       height:40px
       color:#000
-      font-size:16px
+      font-size:14px
+      &.router-link-active
+        color:red
 </style>

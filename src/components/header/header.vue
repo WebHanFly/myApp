@@ -23,12 +23,13 @@
      		<i class="icon-keyboard_arrow_right"></i>
      	</div>
 		<div class="backguand"><img :src="seller.avatar" alt=""></div>  <!-- 整个header的背景虚化 -->
-		<div class="detail-wrapper clearfix" v-show="isshow">
+		<transition name="fade">
+		<div class="detail-wrapper" v-show="isshow">
 			<div class="detail">
 				<div class="title-wrapper">
 					<div class="title">{{seller.name}}</div>
 					<div class="star">
-						<star :score="seller.score" :size="24"></star>
+						<star :score="seller.score"></star>
 					</div>
 				</div>
 				<div class="supports-wrapper">
@@ -62,15 +63,16 @@
 				<i class="icon-close" @click="closeDetail"></i>
 			</div>
 		</div>  <!-- 点击bulletin的全屏弹层 -->
-     </div>
+		</transition>
   </div>
+</div>
 </template>
 
 <script>
 import star from '../../components/star/star';
 export default {
 	name: "seller",
- 	props: {        //父组件传过来的额数据通过props接受
+ 	props: {        //父组件传过来的数据通过props接受
  		seller: {
  			type: Object
  		}
@@ -103,7 +105,6 @@ export default {
 
 
 #header 
- 	// font-size:0
  	color:#fff
  	background:rgba(7,17,27,0.5)
  	position:relative
@@ -227,13 +228,20 @@ export default {
 			width:100%	
 			filter:blur(10px)
 	.detail-wrapper
+		z-index:1
 		position:fixed
 		overflow:auto
 		left:0
 		top:0
-		background:rgba(0,0,0,0.9)
+		background:rgba(0,0,0,0.8)
 		width:100%
-		height:100%	
+		height:100%
+		&.fade-enter,&.fade-leave-to
+			opacity: 0
+			background: rgba(7,17,27,0)
+		&.fade-enter-active,&fade-leave-active
+			background: rgba(7,17,27,0.8)
+			transition: all 0.3s;
 		.detail
 			min-height:100%	
 			height:auto
