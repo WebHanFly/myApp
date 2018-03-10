@@ -7,7 +7,7 @@
       <router-link to="/seller" class="tab-item">卖家</router-link>
     </div>
     
-    <router-view :seller="seller"></router-view>  <!-- 加载路由文件 -->
+    <keep-alive><router-view :seller="seller"></router-view></keep-alive>  <!-- 加载路由文件 -->
 
   </div>
 </template>

@@ -11,11 +11,11 @@
      </div>
      <div class="foods-wrapper" ref="foodswrapper">
      	<ul>
-     		<li v-for="(item,index) in goods" class="foodsmenu food-list-hook">
+     		<li v-for="(item,index) in goods" class="foodsmenu food-list-hook" >
      			<h1>{{item.name}}</h1>
      			<ul>
      				<li v-for="(food,index) in item.foods" class="mainfoods" @click="showfoods(food,$event)">
-     					<div class="icon" ><img :src="food.icon" alt="" width="57" height="57"></div>
+     					<div class="icon"><img :src="food.icon" alt="" width="57" height="57"></div>
      					<div class="title">
      						<h2>{{food.name}}</h2>
      						<p class="description">{{food.description}}</p>
@@ -45,6 +45,10 @@ import shopcart from "../../components/shopcart/shopcart"
 import cartcontrol from "../../components/cartcontrol/cartcontrol"
 import food from "../../components/food/food"
 import BScroll from "better-scroll"
+import Vue from 'vue';
+
+
+var Event = new Vue();
 export default {
  props: {
  	seller: {
@@ -101,6 +105,10 @@ export default {
   			}
   		})
   	},
+    send(){
+      console.log(22);
+      Event.$emit("a-msg", this.selectedFood);
+    },
   	_initScroll(){
   		this.foodScroll = new BScroll(this.$refs.foodswrapper,{
   			probeType: 3,
@@ -139,7 +147,6 @@ export default {
 		this.selectedFood = food;
 				// console.log(this.$refs.food);
 		this.$refs.food.show();
-    this.$refs.food.dayin();
   	}
   },
   components:{
@@ -258,6 +265,6 @@ export default {
 							margin-left:8px
 					.shopping
 						position:absolute
-						bottom:4px
+						bottom:-2px
 						right:-6px		
 </style>

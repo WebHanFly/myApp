@@ -1,9 +1,9 @@
 <template>
 	<div class="ratingSelect-wrapper">
 		<div class="ratingSelect">
-			<p @click="selected(2)" :class="{active:selectType === 2}">{{desc.name1}}<span>1</span></p>
-			<p @click="selected(0)" :class="{active:selectType === 0}">{{desc.name2}}<span>2</span></p>
-			<p @click="selected(1)" :class="{active:selectType === 1}">{{desc.name3}}<span>3</span></p>
+			<p @click="selected(2)" :class="{active:selectType === 2}">{{desc.name1}}<span>{{ratings.length}}</span></p> <!-- 全部 -->
+			<p @click="selected(0)" :class="{active:selectType === 0}">{{desc.name2}}<span>{{name2s.length}}</span></p><!-- 推荐 -->
+			<p @click="selected(1)" :class="{active:selectType === 1}">{{desc.name3}}<span>{{name3s.length}}</span></p><!-- 吐槽 -->
 		</div>
 		<div class="switch" @click="toggleContent">
 			<span class="icon-check_circle" :class="{active:onlyContent}"></span>
@@ -12,10 +12,18 @@
 	</div>
 </template>
 <script>
-const ALL = 2;
+const ALL = 2;      //全部
+const NAME2 = 0;   //推荐、满意
+const NAME3 = 1;  //吐槽、不满意
 	export default{
 		name:"ratingSelect",
 		props:{
+			ratings: {
+				type: Array,
+				default() {
+					return [];
+				}
+			},
 			desc:{
 				type:Object,
 				default(){
@@ -51,6 +59,18 @@ const ALL = 2;
 			toggleContent(){
 				this.myonlyContent = !this.myonlyContent;
 				this.$emit('increment',this.myonlyContent)
+			}
+		},
+		computed: {
+			name2s(){
+				return this.ratings.filter( (rating)=>{
+					return rating.rateType === NAME2
+				} )
+			},
+			name3s(){
+				return this.ratings.filter( (rating)=>{
+					return rating.rateType === NAME3;
+				} )
 			}
 		}
 

@@ -1,4 +1,5 @@
 <template>
+	<transition name="fade">
 	<div class="food" v-show="isshow" ref="food">
 		<div class="food-wrapper">
 			<div class="food-top">
@@ -11,8 +12,10 @@
 					<div class="price">
 						<span>￥{{food.price}}</span>&nbsp&nbsp<span v-if="food.oldPrice" class="oldPrice">￥{{food.oldPrice}}</span>
 					</div>
-					<div class="button">加入购物车</div>
-					<div class="cartcontrol" v-if="food.count"><cartcontrol></cartcontrol></div>
+					<div class="cartcontrol-wrapper"><cartcontrol :food="food"></cartcontrol></div>
+					<transition name="fader">
+						<div class="button" v-show="!food.count" @click="addCart">加入购物车</div>
+					</transition>
 				</div>
 				<div class="back" @click="detailShow" >
 					<i class="icon-arrow_lift"></i>
@@ -26,10 +29,10 @@
 			<split></split>
 			<div class="food-bottom">
 				<h1>商品评价</h1>
-				<ratingSelect :desc="desc" v-on:increment="changeselectType" :selectType="selectType" :onlyContent="onlyContent"></ratingSelect>
+				<ratingSelect :ratings="food.ratings" :desc="desc" v-on:increment="changeselectType" :selectType="selectType" :onlyContent="onlyContent"></ratingSelect>
 				<div class="line"></div>
-				<ul v-show="food.ratings && food.ratings.length">
-					<li v-show="needShow(ratings.rateType,ratings.text)" class="ratings" v-for="ratings in ratingSelectType">
+				<ul v-if="food.ratings && food.ratings.length">
+					<li v-show="needShow(ratings.rateType,ratings.text)" class="ratings" v-for="ratings in food.ratings">
 						<div class="time">
 							<span class="timing">{{ratings.rateTime | formatDate}}</span>
 							<span class="ren">
@@ -43,11 +46,14 @@
 						</div>
 					</li>
 				</ul>
+				<div class="no-ratings" v-show="!food.ratings || !food.ratings.length">暂无评价</div>
 			</div>
 		</div>  <!-- food-wrapper    end -->
 	</div>
+	</transition>
 </template>
 <script>
+import Vue from 'vue';
 import cartcontrol from "../../components/cartcontrol/cartcontrol";
 import split from "../../components/split/split";
 import ratingSelect from "../../components/ratingSelect/ratingSelect";
@@ -57,10 +63,7 @@ const ALL = 2;
 		name:"food",
 		props: {
 			food:{
-				type:Object,
-				default(){
-					return {}
-				}
+				type:Object
 			}
 		},
 		data(){
@@ -82,7 +85,7 @@ const ALL = 2;
 		methods: {
 			show(){
 				this.isshow = true;
-				this.onlyContent = true;
+				// this.onlyContent = true;
 				this.selectType = ALL;
 				this.$nextTick(() => {
 						if(!this.scroll){
@@ -95,19 +98,32 @@ const ALL = 2;
 					});
 
 			},
-			needShow(type,text){
-				if(this.onlyContent && !text){
-					return false;
-				}
-				if(this.selectType === ALL){
-					return true;
-				}else{
-					return type === this.selectType;
-				}
+			needShow(type, text) {
+			        if (this.onlyContent && !text) {
+			          return false;
+			        }
+			        if (this.selectType === ALL) {
+			          return true;
+			        } else {
+			          return type === this.selectType;
+			        }
+			      
 			},
-			dayin(){
-				var _this = this;
-				setTimeout(function(){console.log(111);},100)
+			// dayin(){
+			// 	var _this = this;
+			// 	setTimeout(function(){console.log(111);},100)
+			// },
+			addCart(){
+				
+				Vue.set(this.food,'count',1);
+			},
+			spliced(type){         //------作废函数。
+
+				type.forEach((item,index)=>{
+									if(item.text == ''){
+									type.splice(index,1)
+									}
+								})
 			},
 			detailShow(){
 				// console.log("111");
@@ -116,26 +132,27 @@ const ALL = 2;
 			changeselectType(val){
 				if(typeof(val) == "number"){
 					this.selectType = val;
+					this.$nextTick(() => {
+						this.scroll.refresh();
+					});
 				}else{
 					this.onlyContent = val;
+					this.$nextTick(() => {
+						this.scroll.refresh();
+					})
 				}
 				
 			}
 		},
 		computed:{
-			ratingSelectType(){
+			ratingSelectType(){     //--------------很多余没必要这么写，写个needShow（）就可以了
 				var type = [];
 				if(this.selectType === 1){   //吐槽
 					this.food.ratings.forEach( (item,index) => {
 						 if(item.rateType === 1){
 							type.push(this.food.ratings[index]);
 							if(this.onlyContent){
-								type.forEach((item,index)=>{
-									if(item.text == ''){
-									type.splice(index,1)
-										
-									}
-								})
+								// this.spliced(type);
 							}
 						}
 					});
@@ -149,20 +166,14 @@ const ALL = 2;
 						 if(item.rateType === 0){
 							type.push(this.food.ratings[index]);
 							if(this.onlyContent){
-								type.forEach((item,index)=>{
-									if(item.text == ''){
-									type.splice(index,1)
-
-									}
-								})
+								// this.spliced(type);
 							}
 						}
 					});
-				} else if(this.selectType === 2){
+				} else{
+					// console.log(this.onlyContent);
 					var _this = this;
-					setTimeout(function(){
 						type = _this.food.ratings;
-						console.log(type);
 						 _this.food.ratings.forEach( (item,index)=>{
 						 	if(_this.onlyContent){
 									type.forEach((item,index)=>{
@@ -173,8 +184,6 @@ const ALL = 2;
 									})
 								}
 						 } )
-					},100);
-					 
 				}
 				return type;
 			}
@@ -209,6 +218,11 @@ const ALL = 2;
 	z-index: 30
 	width: 100%
 	background: #fff
+	transform:translate(0,0)
+	&.fade-enter,&.fade-leave-to
+		transform:translate(100%,0)
+	&.fade-enter-active,&.fade-leave-active
+		transition:all 0.3s
 	.food-top
 		.img
 			margin:0
@@ -245,6 +259,10 @@ const ALL = 2;
 					color:rgb(147,153,159)
 					font-weight:700
 					text-decoration:line-through
+			.cartcontrol-wrapper
+				position:absolute
+				bottom:3px
+				right:0		
 			.button 
 				width:74px
 				height:24px
@@ -257,6 +275,10 @@ const ALL = 2;
 				position:absolute
 				right:0px	
 				bottom:0px
+				&.fader-enter,&.fader-leave-to
+					opacity:0
+				&.fader-enter-active,&.fader-leave-active
+					transition:all 0.3s
 		.back
 			position:absolute
 			top:20px
@@ -318,5 +340,10 @@ const ALL = 2;
 						color: rgb(147,153,159)
 				span
 					vertical-align:top		
+		.no-ratings
+			font-size:10px
+			height:40px	
+			line-height:40px
+			margin-left:10px		
 				
 </style>
