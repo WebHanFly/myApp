@@ -29,7 +29,7 @@
     	<div class="seller-part4" >
     		<h1>商家实景</h1>
     		<div class="img" ref="imgWrapper">
-    			<ul>
+    			<ul  ref="UlWrapper">
     				<li v-for="(imgs,index) in seller.pics"><img :src="imgs" alt="" height="90" width="120"></li>
     			</ul>
     		</div>
@@ -54,9 +54,6 @@ export default {
 	props: {
 		seller: {
 			type:Object,
-			default(){
-				return {}
-			}
 		}
 	},
 data(){
@@ -68,13 +65,33 @@ data(){
    		this.Vscroll = new BScroll(this.$refs.sellerWrapper,{
    			click:true
    		});
-   		this.Hscroll = new BScroll(this.$refs.imgWrapper,{
-   			click:true
-   		});
    } )
   },
+  watch: {
+  	'seller'(){
+  		this._initScroll();
+  	}
+  },
   methods: {
-  	getData(){
+  	_initScroll(){
+  		if(this.seller.pics){
+  			let picWidth = 120;
+  			let Margin = 6;
+  			let widthtotal = (picWidth+Margin) * (this.seller.pics.length) - Margin;
+  			this.$refs.UlWrapper.style.width = widthtotal + 'px'; 
+  			this.$nextTick( ()=>{
+  				if(!this.picscroll){
+  					this.picscroll = new BScroll(this.$refs.imgWrapper,{
+  						scrollX:true,
+                		eventPassthrough: 'vertical'   //保证pic不会向上移动。
+  					})
+  				}else{
+  					this.picscroll.refresh();
+  				}
+  			} )
+  		}
+  		
+  		
 
   	}
   },
